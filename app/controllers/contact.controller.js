@@ -1,7 +1,9 @@
-const ApiError = require("../api-error");
 const ContactService = require("../services/contact.service");
 const MongoDB = require("../utils/mongodb.util");
+const ApiError = require("../api-error");
 
+
+/*
 exports.create = (req, res) => {
     res.send({ messeage: "create handler" });
 };
@@ -29,6 +31,7 @@ exports.deleteAll = (req, res) => {
 exports.findAllFavorite = (req, res) => {
     res.send({ messeage: "findAllFavorite handler" });
 };
+*/
 
 // Tạo và lưu kết nối mới
 exports.create = async (req, res, next) => {
@@ -45,7 +48,6 @@ exports.create = async (req, res, next) => {
         );
     }
 };
-
 
 exports.findAll = async (req, res, next) => {
     let documents = [];
@@ -81,7 +83,7 @@ exports.findOne = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-    if (Object.keys(erq.body).length == 0) {
+    if (Object.keys(req.body).length == 0) {
         return next(new ApiError(400, "Data to update can not be empty!"));
     }
     try {
@@ -112,19 +114,26 @@ exports.delete = async (req, res, next) => {
 exports.findAllFavorite = async (_req, res, next) => {
     try {
         const contactService = new ContactService(MongoDB.client);
-        const documents = await contactService.findAllFavorite();
+        const documents = await contactService.findFavorite();
         return res.send(documents);
     } catch (error) {
-        return next(new ApiError(500, "An error occured while retrieving favarite contacts"));
+        return next(
+            new ApiError(500, `An error occurred while retrieving favorite contacts`)
+        );
     }
 };
 
 exports.deleteAll = async (_req, res, next) => {
     try {
-        const contactService = new ContactService(MongoDB.client);
-        const deleteCounts = await contactService.deleteAll();
-        return res.send({messeage: `${deleteCounts} contacts were deleted successfully`});
+      const contactService = new ContactService(MongoDB.client);
+      const deletedCount = await contactService.deleteAll();
+      return res.send({
+        message: `${deletedCount} contacts were deleted successfully`,
+      });
     } catch (error) {
-        return next(new ApiError(500, "An error occured while remove all contacts"));
+      return next(
+        new ApiError(500, "An error occurred while removing all contacts")
+      );
     }
-};
+  };
+
